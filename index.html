@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ต้นแบบนวัตกรรม: แผ่นใสซ้อนทับมหัศจรรย์</title>
+    <!-- โหลด Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- โหลดฟอนต์ภาษาไทย Kanit จาก Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- โหลด FontAwesome สำหรับไอคอน -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        
+        /* Custom styles for the simulator */
+        .overlay-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* Square aspect ratio */
+            background-color: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+        }
+
+        .fraction-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 1/2 Vertical (Blue) */
+        .layer-half {
+            display: flex;
+            background: repeating-linear-gradient(90deg, transparent, transparent calc(100%/2 - 1px), #94a3b8 calc(100%/2 - 1px), #94a3b8 calc(100%/2));
+        }
+        .layer-half .fill {
+            width: 50%;
+            height: 100%;
+            background-color: rgba(59, 130, 246, 0.4); /* Blue */
+            border-right: 2px solid #3b82f6;
+        }
+
+        /* 1/3 Horizontal (Yellow) */
+        .layer-third {
+            display: flex;
+            flex-direction: column;
+            background: repeating-linear-gradient(180deg, transparent, transparent calc(100%/3 - 1px), #94a3b8 calc(100%/3 - 1px), #94a3b8 calc(100%/3));
+            transform: translateX(120%); /* Hidden initially */
+        }
+        .layer-third .fill {
+            width: 100%;
+            height: 33.333%;
+            background-color: rgba(234, 179, 8, 0.4); /* Yellow */
+            border-bottom: 2px solid #eab308;
+        }
+
+        /* Merged State */
+        .is-merged .layer-third {
+            transform: translateX(0);
+        }
+        
+        .grid-cell {
+            border: 1px dashed #cbd5e1;
+        }
+
+        /* Animations */
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s infinite;
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-800">
+
+    <!-- Header/Hero Section -->
+    <header class="bg-gradient-to-r from-indigo-600 to-blue-500 text-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="md:w-2/3 mb-8 md:mb-0">
+                    <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-sm font-semibold tracking-wide mb-4">
+                        <i class="fa-solid fa-lightbulb text-yellow-300 mr-2"></i> Low Effort, High Impact Prototype
+                    </span>
+                    <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">
+                        แผ่นใสซ้อนทับมหัศจรรย์
+                    </h1>
+                    <p class="text-xl text-blue-50 font-light max-w-2xl">
+                        นวัตกรรมสื่อทำมือที่เปลี่ยน "เศษส่วนตัวส่วนไม่เท่ากัน" จากสัญลักษณ์ที่ต้องท่องจำ เป็นภาพที่เด็ก ป.5 สัมผัสและมองเห็นได้จริง
+                    </p>
+                </div>
+                <div class="md:w-1/3 flex justify-center">
+                    <div class="bg-white p-4 rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300 border-4 border-indigo-200">
+                        <img src="https://placehold.co/400x300/e0e7ff/4f46e5?text=Fraction+Overlays" alt="แผ่นใสเศษส่วน" class="rounded-xl w-full h-auto object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Content -->
+            <div class="lg:col-span-7 space-y-8">
+                
+                <!-- Core Concept -->
+                <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 hover:shadow-md transition-shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-indigo-100 text-indigo-600 p-3 rounded-lg mr-4">
+                            <i class="fa-solid fa-bullseye text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800">แนวคิดหลัก (Core Concept)</h2>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed text-lg">
+                        นวัตกรรมนี้แก้ปัญหาความเข้าใจผิดเรื่อง <strong class="text-indigo-600">"การอนุรักษ์ปริมาณ"</strong> โดยอิงหลักการ CPA (Concrete-Pictorial-Abstract) 
+                        เมื่อนำแผ่นใสที่แบ่งส่วนแนวตั้งซ้อนกับแนวนอน เด็กจะเห็นด้วยตาตัวเองว่าตารางถูกแบ่งให้เล็กลงจนมีขนาดเท่ากัน (ส่วนร่วม) โดยปริมาณพื้นที่ระบายสีไม่ได้หายไปไหน ทำลายความเชื่อผิดๆ ที่ว่า "ตัวส่วนบวกกันได้เลย"
+                    </p>
+                </section>
+
+                <!-- Materials & How to make -->
+                <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                            <i class="fa-solid fa-box-open text-emerald-500 mr-2"></i> วัสดุอุปกรณ์
+                        </h3>
+                        <ul class="space-y-3 text-slate-600">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-check text-emerald-500 mt-1 mr-2 text-sm"></i> 
+                                แผ่นใส (Transparency Film) 4 แผ่น/กลุ่ม
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-check text-emerald-500 mt-1 mr-2 text-sm"></i> 
+                                ปากกาเคมี (Marker) สีน้ำเงินและสีแดง
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-check text-emerald-500 mt-1 mr-2 text-sm"></i> 
+                                กระดาษแม่แบบ (Grid Template)
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-check text-emerald-500 mt-1 mr-2 text-sm"></i> 
+                                คลิปหนีบกระดาษ
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                            <i class="fa-solid fa-hammer text-orange-500 mr-2"></i> วิธีการสร้างสื่อ
+                        </h3>
+                        <ol class="space-y-3 text-slate-600 list-decimal list-inside">
+                            <li>วาดกรอบสี่เหลี่ยมจัตุรัสขนาดเท่ากันลงบนแผ่นใสทุกแผ่น</li>
+                            <li><strong>แผ่นชุดที่ 1:</strong> ขีดเส้นแบ่งแนวตั้ง (เช่น แบ่ง 2 ส่วน ระบายสี 1 ส่วน)</li>
+                            <li><strong>แผ่นชุดที่ 2:</strong> ขีดเส้นแบ่งแนวนอน (เช่น แบ่ง 3 ส่วน ระบายสี 1 ส่วน)</li>
+                            <li>เตรียมให้พร้อมใช้สำหรับโจทย์ 1/2 + 1/3</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <!-- Step by step guide -->
+                <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center">
+                        <i class="fa-solid fa-person-chalkboard text-indigo-600 mr-3"></i> คู่มือการสอนในห้องเรียน
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="pl-4 border-l-4 border-yellow-400">
+                            <h4 class="font-bold text-lg text-slate-800">1. การเกริ่นนำ (Hook)</h4>
+                            <p class="text-slate-600 mt-2">"วันนี้ครูมีที่ดิน 2 แปลง แปลงแรกครูปลูกผักไป 1 ใน 2 ส่วน (ชูแผ่นใส 1/2) แปลงที่สองครูปลูกดอกไม้ไป 1 ใน 3 ส่วน (ชูแผ่นใส 1/3) ถ้าครูเอาที่ดินสองแปลงนี้มารวมกันเป็นแปลงเดียว ครูจะมีพื้นที่ปลูกต้นไม้ทั้งหมดเท่าไหร่? ใครเอา 1+1 และ 2+3 มาตอบ 2/5 บ้าง? ...มาดูกันว่าจริงไหม!"</p>
+                        </div>
+                        
+                        <div class="pl-4 border-l-4 border-blue-400">
+                            <h4 class="font-bold text-lg text-slate-800">2. ขั้นลงมือปฏิบัติ (Hands-on)</h4>
+                            <p class="text-slate-600 mt-2">แจกแผ่นใสให้นักเรียน ลองนำแผ่นใส <span class="text-blue-600 font-semibold">1/2 (เส้นตั้ง)</span> มาวางทับด้วยแผ่นใส <span class="text-orange-500 font-semibold">1/3 (เส้นนอน)</span> ให้กรอบสี่เหลี่ยมพอดีกัน ให้นักเรียนนับจำนวนช่องทั้งหมดที่เกิดขึ้นใหม่ (จะได้ 6 ช่อง) และให้นับช่องที่มีสีระบายอยู่ (จะได้ 3+2 = 5 ช่อง)</p>
+                        </div>
+
+                        <div class="pl-4 border-l-4 border-emerald-400">
+                            <h4 class="font-bold text-lg text-slate-800">3. ขั้นถอดบทเรียน (Reflection)</h4>
+                            <p class="text-slate-600 mt-2">ถามคำถามสะท้อนคิด: "ช่องเล็กๆ 6 ช่องนี้มาจากไหน?", "พื้นที่สีน้ำเงินตอนเป็น 1/2 กับตอนเป็น 3/6 ขนาดมันเล็กลงไหม หรือเท่าเดิม?", "ทำไมเราถึงเอาตัวส่วน (ตัวล่าง) มาบวกกันตรงๆ ไม่ได้?"</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Assessment -->
+                <section class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-6">
+                    <h3 class="text-xl font-bold text-indigo-800 mb-3 flex items-center">
+                        <i class="fa-solid fa-clipboard-check mr-2"></i> วิธีการประเมินผล (Assessment)
+                    </h3>
+                    <p class="text-slate-700">
+                        <strong>การสังเกตพฤติกรรมเชิงประจักษ์:</strong> ให้นักเรียนวาดภาพตารางซ้อนทับลงในกระดาษเปล่าเพื่อแก้โจทย์ข้อต่อไป (เช่น 1/4 + 1/3) โดยไม่ใช้แผ่นใส หากนักเรียนสามารถวาดเส้นตัดกันและนับช่องได้ถูกต้อง แสดงว่าเกิดมโนทัศน์ (Conceptual Understanding) แล้ว โดยไม่จำเป็นต้องสนใจว่าเด็กท่องจำสูตรหา ค.ร.น. ได้หรือไม่
+                    </p>
+                </section>
+            </div>
+
+            <!-- Right Column: Interactive Simulator -->
+            <div class="lg:col-span-5 relative">
+                <div class="sticky top-8">
+                    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                        
+                        <div class="bg-slate-800 text-white p-4 text-center">
+                            <h3 class="font-bold text-lg"><i class="fa-solid fa-laptop-code mr-2 text-indigo-400"></i> โปรแกรมจำลองสื่อ (Simulator)</h3>
+                            <p class="text-slate-300 text-sm">จำลองการบวก: 1/2 + 1/3</p>
+                        </div>
+
+                        <div class="p-6">
+                            <!-- Simulator Window -->
+                            <div class="overlay-container" id="simulator-screen">
+                                <!-- Base Grid (Hidden initially, shows when merged) -->
+                                <div class="absolute inset-0 grid grid-cols-2 grid-rows-3 opacity-0 transition-opacity duration-1000 z-0" id="base-grid">
+                                    <div class="grid-cell"></div><div class="grid-cell"></div>
+                                    <div class="grid-cell"></div><div class="grid-cell"></div>
+                                    <div class="grid-cell"></div><div class="grid-cell"></div>
+                                </div>
+                                
+                                <!-- Layer 1: 1/2 Vertical -->
+                                <div class="fraction-layer layer-half z-10">
+                                    <div class="fill flex items-center justify-center">
+                                        <span class="text-blue-800 font-bold text-2xl drop-shadow-md">1/2</span>
+                                    </div>
+                                    <!-- Empty right half -->
+                                </div>
+
+                                <!-- Layer 2: 1/3 Horizontal -->
+                                <div class="fraction-layer layer-third z-20 shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.1)]">
+                                    <div class="fill flex items-center justify-center">
+                                        <span class="text-yellow-800 font-bold text-2xl drop-shadow-md">1/3</span>
+                                    </div>
+                                    <!-- Empty bottom 2/3 -->
+                                </div>
+                                
+                                <!-- Result Overlay Text -->
+                                <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none opacity-0 transition-opacity duration-500" id="result-text">
+                                    <div class="bg-white/90 px-6 py-4 rounded-xl shadow-lg text-center backdrop-blur-sm border-2 border-emerald-400 transform scale-0 transition-transform duration-500 delay-500" id="result-badge">
+                                        <span class="block text-slate-600 font-semibold mb-1">ผลรวมช่องที่มีสี</span>
+                                        <span class="text-4xl font-bold text-emerald-600">5/6</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="mt-6 flex flex-col gap-4">
+                                <div class="flex justify-between items-center text-sm font-medium text-slate-500 px-2">
+                                    <div class="flex items-center"><div class="w-3 h-3 bg-blue-400 mr-2 rounded"></div> แผ่นใส 1/2</div>
+                                    <div class="flex items-center"><div class="w-3 h-3 bg-yellow-400 mr-2 rounded"></div> แผ่นใส 1/3</div>
+                                </div>
+                                
+                                <button id="toggleBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-indigo-500/30 transition-all active:scale-95 flex justify-center items-center group animate-pulse-soft">
+                                    <i class="fa-solid fa-layer-group mr-2 group-hover:-rotate-12 transition-transform"></i>
+                                    <span id="btnText">ซ้อนทับแผ่นใส (Merge)</span>
+                                </button>
+                                <p class="text-center text-xs text-slate-400 mt-2">คลิกปุ่มเพื่อจำลองการวางแผ่นใสซ้อนทับกัน</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center border-t-4 border-indigo-500 mt-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <p>&copy; 2026 Educational Innovation Prototype. Designed for 5th Grade Mathematics.</p>
+            <p class="text-sm mt-2">Based on CPA (Concrete-Pictorial-Abstract) Teaching Approach.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('toggleBtn');
+            const btnText = document.getElementById('btnText');
+            const simulatorScreen = document.getElementById('simulator-screen');
+            const baseGrid = document.getElementById('base-grid');
+            const resultText = document.getElementById('result-text');
+            const resultBadge = document.getElementById('result-badge');
+            
+            let isMerged = false;
+
+            toggleBtn.addEventListener('click', () => {
+                isMerged = !isMerged;
+                
+                // Remove pulse animation once user interacts
+                toggleBtn.classList.remove('animate-pulse-soft');
+
+                if (isMerged) {
+                    // Action: Merge
+                    simulatorScreen.classList.add('is-merged');
+                    btnText.innerText = "แยกแผ่นใส (Separate)";
+                    toggleBtn.classList.replace('bg-indigo-600', 'bg-slate-600');
+                    toggleBtn.classList.replace('hover:bg-indigo-700', 'hover:bg-slate-700');
+                    toggleBtn.classList.replace('hover:shadow-indigo-500/30', 'hover:shadow-slate-500/30');
+                    
+                    // Show grid lines and result after animation completes
+                    setTimeout(() => {
+                        baseGrid.classList.remove('opacity-0');
+                        resultText.classList.remove('opacity-0');
+                        resultBadge.classList.remove('scale-0');
+                    }, 600);
+
+                } else {
+                    // Action: Separate
+                    simulatorScreen.classList.remove('is-merged');
+                    btnText.innerText = "ซ้อนทับแผ่นใส (Merge)";
+                    toggleBtn.classList.replace('bg-slate-600', 'bg-indigo-600');
+                    toggleBtn.classList.replace('hover:bg-slate-700', 'hover:bg-indigo-700');
+                    toggleBtn.classList.replace('hover:shadow-slate-500/30', 'hover:shadow-indigo-500/30');
+                    
+                    // Hide grid lines and result
+                    baseGrid.classList.add('opacity-0');
+                    resultText.classList.add('opacity-0');
+                    resultBadge.classList.add('scale-0');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
